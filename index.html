@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File to S3</title>
+</head>
+<body>
+    <h1>Upload File to S3</h1>
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">Upload</button>
+
+    <script>
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+
+            // URL pre-firmato generato con AWS CLI
+            const presignedUrl = 'https://srv01ice-bucket.s3.eu-west-3.amazonaws.com/srv01ice.ova?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6QZ4YKIFH3LSZFPM%2F20240624%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20240624T150940Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=102110c84d86278097303f77fde5825a9b2cc0abdb2fcc8dcc7304e5fd994561';
+
+            fetch(presignedUrl, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type
+                },
+                body: file
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('File uploaded successfully!');
+                } else {
+                    alert('Failed to upload file');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                alert('Error uploading file');
+            });
+        }
+    </script>
+</body>
+</html>
